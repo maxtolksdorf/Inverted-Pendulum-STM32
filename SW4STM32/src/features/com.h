@@ -2,8 +2,7 @@
 #define FEATURES_COM_H_
 
 int timestamp;
-int tic;
-int toc;
+int looptime;
 
 void sendByte(uint8_t byte)
 {
@@ -60,11 +59,10 @@ void sendValueUnsigned(int value, int digits)
 
 void sendCOM(void)
 {
-	sendValueUnsigned(tic, 3);
-	sendValueUnsigned(toc, 3);
+	sendValueUnsigned(timestamp, 8);
+	sendValueUnsigned(looptime, 3);
 	sendValueSigned(remote_0, 2);
 	sendValueSigned(remote_1, 2);
-	sendValueSigned(convert(phi), 2);
 	sendByte('\r');
 	sendByte('\n');
 }

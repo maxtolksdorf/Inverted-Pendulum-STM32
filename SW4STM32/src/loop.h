@@ -12,10 +12,8 @@ void TIM3_IRQHandler(void)		// control loop based on the timer update interrupt
 	applyDAC();					// applies the motor voltages
 	applyLED();					// switches the LEDs according to the current state of the control loop
 
-//	tic = (int) TIM3->CNT;		// snapshots the current loop time
-//	sendCOM();					// sends values to the virtual COM port, can be read with a terminal program like putty
 //	timestamp++;				// increases the timestamp value
-//	toc = (int) TIM3->CNT;		// snapshots the current loop time
+//	looptime = (int) TIM3->CNT;	// snapshots the current loop time
 
 	TIM3->SR &= ~TIM_SR_UIF;	// clears the interrupt pending flag
 }

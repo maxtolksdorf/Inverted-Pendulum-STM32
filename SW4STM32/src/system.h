@@ -33,7 +33,7 @@ void initSYS(void)								// overclock the CPU to the maximum supported frequenc
 void initIRQ(void)								// initialize the timer update interrupt loop
 {
 	RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;			// enable clock
-	TIM3->PSC = 71;							// prescale timer step to 1 us
+	TIM3->PSC = 71;								// prescale timer step to 1 us
 	TIM3->ARR = 1000000 / F_LOOP - 1; 			// set timer count reset to match desired loop frequency
 	TIM3->DIER |= TIM_DIER_UIE;					// enable update interrupt
 	NVIC_EnableIRQ(TIM3_IRQn);					// enable interrupt request
