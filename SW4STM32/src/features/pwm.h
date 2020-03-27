@@ -7,6 +7,7 @@ int remote_1;
 
 void readPWM(void)
 {
+	static int init;
 	static int delay;
 	static int offset;
 
@@ -21,13 +22,18 @@ void readPWM(void)
 	{
 		if (delay < F_LOOP)
 		{
-			offset = (int) TIM2->CCR1;
+			if (init == 0)
+			{
+				offset = (int) TIM2->CCR1;
+			}
+
 			delay++;
 		}
 		else
 		{
 			if (TIM2->CNT > 8192)
 			{
+				init = 1;
 				connection = 1;
 				remote_0 = ((int) TIM2->CCR1 - offset) / 10;
 				remote_1 = ((int) TIM2->CCR2 - (int) TIM2->CCR1 - offset) / 10;

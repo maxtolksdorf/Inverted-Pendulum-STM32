@@ -26,12 +26,20 @@ void loopPID(void)
 	{
 		phi 			= (1.0f - ALPHA) * (phi + GYR_CONV / F_LOOP * gyr_x) + ALPHA * ACC_CONV * acc_z;
 		phi_error		= phi + phi_offset;
+
 		phi_error_i		= phi_error + phi_error_i;
+		if (phi_error_i < -4095 * F_LOOP / I_PHI) { phi_error_i = -4095 * F_LOOP / I_PHI; }
+		if (phi_error_i >  4095 * F_LOOP / I_PHI) { phi_error_i =  4095 * F_LOOP / I_PHI; }
+
 		phi_error_d		= phi_error - phi_error_prev;
 		phi_error_prev	= phi_error;
 
 		psi_error		= psi_error + GYR_CONV / F_LOOP * gyr_y + REMOTE_0_CONV / F_LOOP * remote_0;
+
 		psi_error_i		= psi_error + psi_error_i;
+		if (psi_error_i < -4095 * F_LOOP / I_PSI) { psi_error_i = -4095 * F_LOOP / I_PSI; }
+		if (psi_error_i >  4095 * F_LOOP / I_PSI) { psi_error_i =  4095 * F_LOOP / I_PSI; }
+
 		psi_error_d		= psi_error - psi_error_prev;
 		psi_error_prev	= psi_error;
 
@@ -43,14 +51,16 @@ void loopPID(void)
 		vel				= P_PHI * phi_error + I_PHI / F_LOOP * phi_error_i;
 		vel_offset		= REMOTE_1_CONV * remote_1;
 		vel_error		= vel - vel_offset;
-		vel_error_i		= vel_error + vel_error_i;
-		if (vel_error_i < -TILT_MAX * F_LOOP / I_VEL) { vel_error_i = -TILT_MAX * F_LOOP / I_VEL; }
-		if (vel_error_i >  TILT_MAX * F_LOOP / I_VEL) { vel_error_i =  TILT_MAX * F_LOOP / I_VEL; }
-		phi_offset		= P_VEL * vel_error + I_VEL / F_LOOP * vel_error_i;
-		if (phi_offset < -TILT_MAX) { phi_offset = -TILT_MAX; }
-		if (phi_offset >  TILT_MAX) { phi_offset =  TILT_MAX; }
 
-		if (phi > TILT_CRITICAL || phi < -TILT_CRITICAL)
+		vel_error_i		= vel_error + vel_error_i;
+		if (vel_error_i < -PHI_MAX * F_LOOP / I_VEL) { vel_error_i = -PHI_MAX * F_LOOP / I_VEL; }
+		if (vel_error_i >  PHI_MAX * F_LOOP / I_VEL) { vel_error_i =  PHI_MAX * F_LOOP / I_VEL; }
+
+		phi_offset		= P_VEL * vel_error + I_VEL / F_LOOP * vel_error_i;
+		if (phi_offset < -PHI_MAX) { phi_offset = -PHI_MAX; }
+		if (phi_offset >  PHI_MAX) { phi_offset =  PHI_MAX; }
+
+		if (phi > PHI_CRIT || phi < -PHI_CRIT)
 		{
 			state			= 0;
 
