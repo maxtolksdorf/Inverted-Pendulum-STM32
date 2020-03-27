@@ -62,8 +62,8 @@ void initPWM(void)
 	TIM2->CCER |= (0b1 << TIM_CCER_CC2P_Pos);			// capture falling edge
 	TIM2->CCER |= TIM_CCER_CC2E;						// enable capture
 
-	TIM2->PSC = 71;									// prescale timer step to 1 us
-	TIM2->ARR = 0xffff;								// set timer count to maximum
+	TIM2->PSC = 71;										// prescale timer step to 1 us
+	TIM2->ARR = 0xffff;									// set timer count to maximum
 	TIM2->CR1 |= TIM_CR1_CEN;							// enable timer
 }
 

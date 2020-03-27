@@ -20,10 +20,10 @@ void applyLED(void)
 
 void initLED(void)
 {
-	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;						// enable clock
-	GPIOA->MODER |= (0b01 << GPIO_MODER_MODER8_Pos);		// PA8: output mode
-	GPIOA->MODER |= (0b01 << GPIO_MODER_MODER9_Pos);		// PA9: output mode
-	GPIOA->MODER |= (0b01 << GPIO_MODER_MODER10_Pos);		// PA10: output mode
+	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;					// enable clock
+	GPIOA->MODER |= (0b01 << GPIO_MODER_MODER8_Pos);	// PA8: output mode
+	GPIOA->MODER |= (0b01 << GPIO_MODER_MODER9_Pos);	// PA9: output mode
+	GPIOA->MODER |= (0b01 << GPIO_MODER_MODER10_Pos);	// PA10: output mode
 }
 
 #endif

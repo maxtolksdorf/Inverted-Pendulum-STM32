@@ -11,7 +11,7 @@ void readBTN(void)
 
 void initBTN(void)
 {
-	RCC->AHBENR |= RCC_AHBENR_GPIOCEN;		// enable clock
+	RCC->AHBENR |= RCC_AHBENR_GPIOCEN;	// enable clock
 }
 
 #endif

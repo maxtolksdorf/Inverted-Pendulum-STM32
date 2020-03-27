@@ -94,22 +94,22 @@ void readIMU(void)
 
 void initIMU(void)
 {
-	RCC->AHBENR |= RCC_AHBENR_GPIOBEN;						// enable clock
-	GPIOB->OTYPER |= GPIO_OTYPER_OT_8;						// PB8: open drain output
-	GPIOB->AFR[1] |= (0b0100 << GPIO_AFRH_AFRH0_Pos);		// PB8: alternate function 4
-	GPIOB->MODER |= (0b10 << GPIO_MODER_MODER8_Pos);		// PB8: alternate function mode
-	GPIOB->OTYPER |= GPIO_OTYPER_OT_9;						// PB9: open drain output
-	GPIOB->AFR[1] |= (0b0100 << GPIO_AFRH_AFRH1_Pos);		// PB9: alternate function 4
-	GPIOB->MODER |= (0b10 << GPIO_MODER_MODER9_Pos);		// PB9: alternate function mode
+	RCC->AHBENR |= RCC_AHBENR_GPIOBEN;					// enable clock
+	GPIOB->OTYPER |= GPIO_OTYPER_OT_8;					// PB8: open drain output
+	GPIOB->AFR[1] |= (0b0100 << GPIO_AFRH_AFRH0_Pos);	// PB8: alternate function 4
+	GPIOB->MODER |= (0b10 << GPIO_MODER_MODER8_Pos);	// PB8: alternate function mode
+	GPIOB->OTYPER |= GPIO_OTYPER_OT_9;					// PB9: open drain output
+	GPIOB->AFR[1] |= (0b0100 << GPIO_AFRH_AFRH1_Pos);	// PB9: alternate function 4
+	GPIOB->MODER |= (0b10 << GPIO_MODER_MODER9_Pos);	// PB9: alternate function mode
 
-	RCC->APB1ENR |= RCC_APB1ENR_I2C1EN;						// enable clock
-	RCC->CFGR3 |= RCC_CFGR3_I2C1SW;							// use 72 MHz CPU clock as clock source for I2C
-	I2C1->TIMINGR |= (8 << I2C_TIMINGR_PRESC_Pos);			// set timings for 400 kHz fast mode I2C
-	I2C1->TIMINGR |= (9 << I2C_TIMINGR_SCLL_Pos);			// set timings for 400 kHz fast mode I2C
-	I2C1->TIMINGR |= (3 << I2C_TIMINGR_SCLH_Pos);			// set timings for 400 kHz fast mode I2C
-	I2C1->TIMINGR |= (1 << I2C_TIMINGR_SDADEL_Pos);			// set timings for 400 kHz fast mode I2C
-	I2C1->TIMINGR |= (3 << I2C_TIMINGR_SCLDEL_Pos);			// set timings for 400 kHz fast mode I2C
-	I2C1->CR1 |= I2C_CR1_PE;								// enable I2C
+	RCC->APB1ENR |= RCC_APB1ENR_I2C1EN;					// enable clock
+	RCC->CFGR3 |= RCC_CFGR3_I2C1SW;						// use 72 MHz CPU clock as clock source for I2C
+	I2C1->TIMINGR |= (8 << I2C_TIMINGR_PRESC_Pos);		// set timings for 400 kHz fast mode I2C
+	I2C1->TIMINGR |= (9 << I2C_TIMINGR_SCLL_Pos);		// set timings for 400 kHz fast mode I2C
+	I2C1->TIMINGR |= (3 << I2C_TIMINGR_SCLH_Pos);		// set timings for 400 kHz fast mode I2C
+	I2C1->TIMINGR |= (1 << I2C_TIMINGR_SDADEL_Pos);		// set timings for 400 kHz fast mode I2C
+	I2C1->TIMINGR |= (3 << I2C_TIMINGR_SCLDEL_Pos);		// set timings for 400 kHz fast mode I2C
+	I2C1->CR1 |= I2C_CR1_PE;							// enable I2C
 
 	do
 	{

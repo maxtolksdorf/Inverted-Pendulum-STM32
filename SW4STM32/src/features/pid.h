@@ -26,29 +26,32 @@ void loopPID(void)
 	{
 		phi 			= (1.0f - ALPHA) * (phi + GYR_CONV / F_LOOP * gyr_x) + ALPHA * ACC_CONV * acc_z;
 		phi_error		= phi + phi_offset;
-
 		phi_error_i		= phi_error + phi_error_i;
-		if (phi_error_i < -4095 * F_LOOP / I_PHI) { phi_error_i = -4095 * F_LOOP / I_PHI; }
-		if (phi_error_i >  4095 * F_LOOP / I_PHI) { phi_error_i =  4095 * F_LOOP / I_PHI; }
-
+		if (phi_error_i < -2048 * F_LOOP / I_PHI) { phi_error_i = -2048 * F_LOOP / I_PHI; }
+		if (phi_error_i >  2048 * F_LOOP / I_PHI) { phi_error_i =  2048 * F_LOOP / I_PHI; }
 		phi_error_d		= phi_error - phi_error_prev;
 		phi_error_prev	= phi_error;
 
 		psi_error		= psi_error + GYR_CONV / F_LOOP * gyr_y + REMOTE_0_CONV / F_LOOP * remote_0;
-
 		psi_error_i		= psi_error + psi_error_i;
-		if (psi_error_i < -4095 * F_LOOP / I_PSI) { psi_error_i = -4095 * F_LOOP / I_PSI; }
-		if (psi_error_i >  4095 * F_LOOP / I_PSI) { psi_error_i =  4095 * F_LOOP / I_PSI; }
-
+		if (psi_error_i < -2048 * F_LOOP / I_PSI) { psi_error_i = -2048 * F_LOOP / I_PSI; }
+		if (psi_error_i >  2048 * F_LOOP / I_PSI) { psi_error_i =  2048 * F_LOOP / I_PSI; }
 		psi_error_d		= psi_error - psi_error_prev;
 		psi_error_prev	= psi_error;
 
 		rot				= P_PSI * psi_error + I_PSI / F_LOOP * psi_error_i + D_PSI * F_LOOP * psi_error_d;
+		if (rot < -2048) { rot = -2048; }
+		if (rot >  2048) { rot =  2048; }
 		vel				= P_PHI * phi_error + I_PHI / F_LOOP * phi_error_i + D_PHI * F_LOOP * phi_error_d;
+		if (vel < -2048) { vel = -2048; }
+		if (vel >  2048) { vel =  2048; }
+
 		motor_0			= convert(vel - rot);
 		motor_1			= convert(vel + rot);
 
 		vel				= P_PHI * phi_error + I_PHI / F_LOOP * phi_error_i;
+		if (vel < -2048) { vel = -2048; }
+		if (vel >  2048) { vel =  2048; }
 		vel_offset		= REMOTE_1_CONV * remote_1;
 		vel_error		= vel - vel_offset;
 
