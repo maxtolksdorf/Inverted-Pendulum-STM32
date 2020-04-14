@@ -1,21 +1,22 @@
 #ifndef FEATURES_LED_H_
 #define FEATURES_LED_H_
 
-void disableLED(int id)
+void setLED_A(int enabled)
 {
-	GPIOA->ODR &= ~(1 << id);
+	if (enabled) GPIOA->ODR |= (1 << 8);
+	else         GPIOA->ODR &= ~(1 << 8);
 }
 
-void enableLED(int id)
+void setLED_B(int enabled)
 {
-	GPIOA->ODR |= (1 << id);
+	if (enabled) GPIOA->ODR |= (1 << 10);
+	else         GPIOA->ODR &= ~(1 << 10);
 }
 
-void applyLED(void)
+void setLED_C(int enabled)
 {
-	if (state > 0) { enableLED(8); } else { disableLED(8); }
-	if (state > 1) { enableLED(10); } else { disableLED(10); }
-	if (connection == 1) { enableLED(9); } else { disableLED(9); }
+	if (enabled) GPIOA->ODR |= (1 << 9);
+	else         GPIOA->ODR &= ~(1 << 9);
 }
 
 void initLED(void)

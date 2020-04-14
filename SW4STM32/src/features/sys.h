@@ -1,21 +1,5 @@
-#ifndef SYSTEM_H_
-#define SYSTEM_H_
-
-int convert(float f)							// convert float values to integer values
-{
-	int i;
-
-	if (f < 0)
-	{
-		i = (int) (f - 0.5f);
-	}
-	else
-	{
-		i = (int) (f + 0.5f);
-	}
-
-	return i;
-}
+#ifndef FEATURES_SYS_H_
+#define FEATURES_SYS_H_
 
 void initSYS(void)								// overclock the CPU to the maximum supported frequency of 72 MHz
 {
@@ -28,10 +12,7 @@ void initSYS(void)								// overclock the CPU to the maximum supported frequenc
 	RCC->CR |= RCC_CR_PLLON;					// enable PLL
 	while (!(RCC->CR & RCC_CR_PLLRDY));			// wait until PLL is ready
 	RCC->CFGR |= RCC_CFGR_SW_PLL;				// set PLL as CPU clock source
-}
 
-void initIRQ(void)								// initialize the timer update interrupt loop
-{
 	RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;			// enable clock
 	TIM3->PSC = 71;								// prescale timer step to 1 us
 	TIM3->ARR = 1000000 / F_LOOP - 1; 			// set timer count reset to match desired loop frequency

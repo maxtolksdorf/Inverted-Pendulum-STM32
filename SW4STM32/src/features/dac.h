@@ -1,19 +1,16 @@
 #ifndef FEATURES_DAC_H_
 #define FEATURES_DAC_H_
 
-int motor_0;
-int motor_1;
-
-void applyDAC(void)
+void setDAC(int motor_0, int motor_1)
 {
 	int register_0 = motor_0 + 2048;
 	int register_1 = motor_1 + 2048;
 
-	if (register_0 < 0) { register_0 = 0; }
-	if (register_0 > 4095) { register_0 = 4095; }
+	if (register_0 < 0)    register_0 = 0;
+	if (register_0 > 4095) register_0 = 4095;
 
-	if (register_1 < 0) { register_1 = 0; }
-	if (register_1 > 4095) { register_1 = 4095; }
+	if (register_1 < 0)    register_1 = 0;
+	if (register_1 > 4095) register_1 = 4095;
 
 	DAC->DHR12RD = ((register_1 << 16) | register_0);
 }
@@ -28,7 +25,7 @@ void initDAC(void)
 	DAC->CR |= DAC_CR_EN1;								// enable DAC 1
 	DAC->CR |= DAC_CR_EN2;								// enable DAC 2
 
-	applyDAC();
+	setDAC(0, 0);
 }
 
 #endif

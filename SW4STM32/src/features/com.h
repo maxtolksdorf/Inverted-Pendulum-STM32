@@ -1,13 +1,9 @@
 #ifndef FEATURES_COM_H_
 #define FEATURES_COM_H_
 
-int timestamp;
-int looptime;
-
 void sendByte(uint8_t byte)
 {
 	while (!(USART2->ISR & USART_ISR_TXE));
-
 	USART2->TDR = byte;
 }
 
@@ -31,12 +27,7 @@ void sendValueSigned(int value, int digits)
 		value /= 10;
 	}
 
-	for (int i = 0; i < digits + 1; i++)
-	{
-		sendByte(number[i]);
-	}
-
-	sendByte(' ');
+	for (int i = 0; i < digits + 1; i++) sendByte(number[i]);
 }
 
 void sendValueUnsigned(int value, int digits)
@@ -49,22 +40,15 @@ void sendValueUnsigned(int value, int digits)
 		value /= 10;
 	}
 
-	for (int i = 0; i < digits; i++)
-	{
-		sendByte(number[i]);
-	}
-
-	sendByte(' ');
+	for (int i = 0; i < digits; i++) sendByte(number[i]);
 }
 
 void sendCOM(void)
 {
-	sendValueUnsigned(timestamp, 8);
+	static int looptime;
 	sendValueUnsigned(looptime, 3);
-	sendValueSigned(remote_0, 2);
-	sendValueSigned(remote_1, 2);
-	sendByte('\r');
 	sendByte('\n');
+	looptime = (int) TIM3->CNT;
 }
 
 void initCOM(void)

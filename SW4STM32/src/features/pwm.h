@@ -1,43 +1,32 @@
 #ifndef FEATURES_PWM_H_
 #define FEATURES_PWM_H_
 
-int connection;
-int remote_0;
-int remote_1;
-
 void readPWM(void)
 {
-	static int init;
 	static int delay;
 	static int offset;
+	static int init;
 
-	if (TIM2->CNT > 16384)
+	if ((int) TIM2->CNT > 16384)
 	{
-		delay = 0;
-		connection = 0;
+		setLED_C(0);
 		remote_0 = 0;
 		remote_1 = 0;
+		delay = 0;
 	}
-	else
+	else if ((int) TIM2->CNT > 8192)
 	{
-		if (delay < F_LOOP)
+		if (delay > 999)
 		{
-			if (init == 0)
-			{
-				offset = (int) TIM2->CCR1;
-			}
-
-			delay++;
+			setLED_C(1);
+			remote_0 = ((int) TIM2->CCR1 - offset) / 10;
+			remote_1 = ((int) TIM2->CCR2 - (int) TIM2->CCR1 - offset) / 10;
+			init = 1;
 		}
 		else
 		{
-			if (TIM2->CNT > 8192)
-			{
-				init = 1;
-				connection = 1;
-				remote_0 = ((int) TIM2->CCR1 - offset) / 10;
-				remote_1 = ((int) TIM2->CCR2 - (int) TIM2->CCR1 - offset) / 10;
-			}
+			if (!init) offset = (int) TIM2->CCR1;
+			delay++;
 		}
 	}
 }

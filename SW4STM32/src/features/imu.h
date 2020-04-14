@@ -1,10 +1,6 @@
 #ifndef FEATURES_IMU_H_
 #define FEATURES_IMU_H_
 
-int acc_z;
-int gyr_x;
-int gyr_y;
-
 void wakeIMU(void)
 {
 	uint8_t i2c_data[2];
@@ -19,11 +15,7 @@ void wakeIMU(void)
 
 	do
 	{
-		if (I2C1->ISR & (I2C_ISR_NACKF | I2C_ISR_ARLO))
-		{
-			goto error;
-		}
-
+		if (I2C1->ISR & (I2C_ISR_NACKF | I2C_ISR_ARLO)) goto reset;
 		if (I2C1->ISR & I2C_ISR_TXIS)
 		{
 			I2C1->TXDR = i2c_data[i];
@@ -33,7 +25,9 @@ void wakeIMU(void)
 
 	I2C1->CR2 |= I2C_CR2_STOP;
 
-	error:
+	return;
+
+	reset:
 	I2C1->CR1 &= ~I2C_CR1_PE;
 	I2C1->CR1 |= I2C_CR1_PE;
 }
@@ -50,15 +44,8 @@ void readIMU(void)
 
 	do
 	{
-		if (I2C1->ISR & (I2C_ISR_NACKF | I2C_ISR_ARLO))
-		{
-			goto error;
-		}
-
-		if (I2C1->ISR & I2C_ISR_TXIS)
-		{
-			I2C1->TXDR = 0x3F;
-		}
+		if (I2C1->ISR & (I2C_ISR_NACKF | I2C_ISR_ARLO)) goto reset;
+		if (I2C1->ISR & I2C_ISR_TXIS) I2C1->TXDR = 0x3F;
 	} while (!(I2C1->ISR & I2C_ISR_TC));
 
 	I2C1->CR2 = 0;
@@ -69,11 +56,7 @@ void readIMU(void)
 
 	do
 	{
-		if (I2C1->ISR & (I2C_ISR_NACKF | I2C_ISR_ARLO))
-		{
-			goto error;
-		}
-
+		if (I2C1->ISR & (I2C_ISR_NACKF | I2C_ISR_ARLO)) goto reset;
 		if (I2C1->ISR & I2C_ISR_RXNE)
 		{
 			i2c_data[i] = (uint8_t) I2C1->RXDR;
@@ -83,11 +66,13 @@ void readIMU(void)
 
 	I2C1->CR2 |= I2C_CR2_STOP;
 
-	acc_z = (int16_t) ((i2c_data[0] << 8) | i2c_data[1]);
+	acc_z = (int16_t) ((i2c_data[0] << 8) | i2c_data[1]) - 800;
 	gyr_x = (int16_t) ((i2c_data[4] << 8) | i2c_data[5]);
 	gyr_y = (int16_t) ((i2c_data[6] << 8) | i2c_data[7]);
 
-	error:
+	return;
+
+	reset:
 	I2C1->CR1 &= ~I2C_CR1_PE;
 	I2C1->CR1 |= I2C_CR1_PE;
 }
