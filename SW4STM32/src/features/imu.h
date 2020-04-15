@@ -5,7 +5,7 @@ void wakeIMU(void)
 {
 	uint8_t i2c_data[2];
 	i2c_data[0] = 0x6B;
-	i2c_data[1] = 0x01;
+	i2c_data[1] = 0x00;
 	int i = 0;
 
 	I2C1->CR2 = 0;
@@ -66,7 +66,7 @@ void readIMU(void)
 
 	I2C1->CR2 |= I2C_CR2_STOP;
 
-	acc_z = (int16_t) ((i2c_data[0] << 8) | i2c_data[1]) - 800;
+	acc_z = (int16_t) ((i2c_data[0] << 8) | i2c_data[1]);
 	gyr_x = (int16_t) ((i2c_data[4] << 8) | i2c_data[5]);
 	gyr_y = (int16_t) ((i2c_data[6] << 8) | i2c_data[7]);
 

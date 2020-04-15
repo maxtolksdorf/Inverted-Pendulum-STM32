@@ -1,13 +1,17 @@
 #include <stm32f3xx.h>					// STM32F303RE manufacturer dependencies
 
 #define F_LOOP			4000			// control loop frequency
-#define ALPHA			0.0001f			// parameter of the complementary filter
-#define ACC_CONV		0.003497057f	// conversion factor of the accelerometers
-#define GYR_CONV		0.007629395f	// conversion factor of the gyroscopes
-#define REMOTE_0_CONV	4.0f			// conversion factor of the remote control inputs
-#define REMOTE_1_CONV	16.0f			// conversion factor of the remote control inputs
+#define VEL_MAX			2047			// maximum velocity value
+#define ACC_Z_OFFSET	1000			// offset of the IMU
+#define GYR_X_OFFSET	100				// offset of the IMU
+#define GYR_Y_OFFSET	65				// offset of the IMU
+#define ACC_GAIN		0.003497057f	// gain of the accelerometers
+#define GYR_GAIN		0.007629395f	// gain of the gyroscopes
+#define REMOTE_0_GAIN	4.0f			// gain of the remote control inputs
+#define REMOTE_1_GAIN	16.0f			// gain of the remote control inputs
 #define PHI_MAX			7.5f			// maximum allowed tilt angle in a static position
 #define PHI_CRIT		15.0f			// maximum allowed tilt angle before the control loop is shut off
+#define ALPHA			0.4f			// parameter of the complementary filter
 
 #define P_VEL			0.0004f			// P value of the velocity controller
 #define I_VEL			0.04f			// I value of the velocity controller

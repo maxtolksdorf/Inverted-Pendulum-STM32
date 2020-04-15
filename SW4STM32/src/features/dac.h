@@ -3,16 +3,7 @@
 
 void setDAC(int motor_0, int motor_1)
 {
-	int register_0 = motor_0 + 2048;
-	int register_1 = motor_1 + 2048;
-
-	if (register_0 < 0)    register_0 = 0;
-	if (register_0 > 4095) register_0 = 4095;
-
-	if (register_1 < 0)    register_1 = 0;
-	if (register_1 > 4095) register_1 = 4095;
-
-	DAC->DHR12RD = ((register_1 << 16) | register_0);
+	DAC->DHR12RD = (((motor_1 + VEL_MAX) << 16) | (motor_0 + VEL_MAX));
 }
 
 void initDAC(void)
