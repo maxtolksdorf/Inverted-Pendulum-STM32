@@ -47,9 +47,6 @@ void sendCOM(void)
 {
 	static int looptime;
 	sendValueUnsigned(looptime, 3);
-//	sendValueSigned(acc_z, 5);
-//	sendValueSigned(gyr_x, 5);
-//	sendValueSigned(gyr_y, 5);
 	sendByte('\n');
 	looptime = (int) TIM3->CNT;
 }

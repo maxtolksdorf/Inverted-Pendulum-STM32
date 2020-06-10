@@ -1,7 +1,20 @@
-#ifndef FEATURES_SYS_H_
-#define FEATURES_SYS_H_
+#ifndef SYSTEM_H_
+#define SYSTEM_H_
 
-void initSYS(void)								// overclock the CPU to the maximum supported frequency of 72 MHz
+#define F_LOOP 4000
+
+int convert(float x)
+{
+	if (x < 0) return (int) (x - 0.5f);
+	else       return (int) (x + 0.5f);
+}
+
+int readButton(void)
+{
+	return ((~GPIOC->IDR & GPIO_IDR_13) >> 13);
+}
+
+void initSystem(void)
 {
 	FLASH->ACR |= FLASH_ACR_LATENCY_1;			// set wait states for flash
 	RCC->CR |= RCC_CR_HSEON;					// enable on board quartz (HSE)
@@ -17,8 +30,9 @@ void initSYS(void)								// overclock the CPU to the maximum supported frequenc
 	TIM3->PSC = 71;								// prescale timer step to 1 us
 	TIM3->ARR = 1000000 / F_LOOP - 1; 			// set timer count reset to match desired loop frequency
 	TIM3->DIER |= TIM_DIER_UIE;					// enable update interrupt
-	NVIC_EnableIRQ(TIM3_IRQn);					// enable interrupt request
 	TIM3->CR1 |= TIM_CR1_CEN; 					// enable timer
+
+	RCC->AHBENR |= RCC_AHBENR_GPIOCEN;			// enable clock
 }
 
 #endif

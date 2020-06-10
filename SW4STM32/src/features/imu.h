@@ -1,6 +1,10 @@
 #ifndef FEATURES_IMU_H_
 #define FEATURES_IMU_H_
 
+int acc_z;
+int gyr_x;
+int gyr_y;
+
 void wakeIMU(void)
 {
 	uint8_t i2c_data[2];

@@ -1,16 +1,32 @@
-#ifndef PID_H_
-#define PID_H_
+#ifndef FEATURES_PID_H_
+#define FEATURES_PID_H_
 
-int convert(float x)
-{
-	if (x < 0) return (int) (x - 0.5f);
-	else       return (int) (x + 0.5f);
-}
+#define ALPHA        0.4f
+#define ACC_GAIN     0.003497057f
+#define GYR_GAIN     0.007629395f
+#define ACC_Z_OFFSET 500
+#define GYR_X_OFFSET 75
+#define GYR_Y_OFFSET 75
+#define ESC_0_GAIN   4.0f
+#define ESC_1_GAIN   0.8f
+#define PHI_MAX      10.0f
+#define PHI_CRIT     20.0f
+
+#define P_VEL        0.02f
+#define I_VEL        0.8f
+
+#define P_PHI        16.0f
+#define I_PHI        4.0f
+#define D_PHI        0.6f
+
+#define P_PSI        8.0f
+#define I_PSI        2.0f
+#define D_PSI        0.3f
 
 int runPID(void)
 {
 	static float phi;
-	phi = (1 - ALPHA / F_LOOP) * (phi + GYR_GAIN / F_LOOP * (gyr_x - GYR_X_OFFSET)) + ALPHA / F_LOOP * ACC_GAIN * (acc_z - ACC_Z_OFFSET);
+	phi = (1 - ALPHA / F_LOOP) * (phi + GYR_GAIN / F_LOOP * (gyr_x - GYR_X_OFFSET)) - ALPHA / F_LOOP * ACC_GAIN * (acc_z - ACC_Z_OFFSET);
 	float phi_delta = GYR_GAIN / F_LOOP * (gyr_x - GYR_X_OFFSET);
 
 	static float phi_offset;
@@ -18,21 +34,21 @@ int runPID(void)
 
 	static float phi_error_sum;
 	phi_error_sum = phi_error_sum + phi_error;
-	if (phi_error_sum < -VEL_MAX * F_LOOP / I_PHI) phi_error_sum = -VEL_MAX * F_LOOP / I_PHI;
-	if (phi_error_sum >  VEL_MAX * F_LOOP / I_PHI) phi_error_sum =  VEL_MAX * F_LOOP / I_PHI;
+	if (phi_error_sum < -100.0f * F_LOOP / I_PHI) phi_error_sum = -100.0f * F_LOOP / I_PHI;
+	if (phi_error_sum >  100.0f * F_LOOP / I_PHI) phi_error_sum =  100.0f * F_LOOP / I_PHI;
 
 	float vel = P_PHI * phi_error + I_PHI / F_LOOP * phi_error_sum + D_PHI * F_LOOP * phi_delta;
-	if (vel < -VEL_MAX) vel = -VEL_MAX;
-	if (vel >  VEL_MAX) vel =  VEL_MAX;
+	if (vel < -100.0f) vel = -100.0f;
+	if (vel >  100.0f) vel =  100.0f;
 
 	static float psi_error;
-	psi_error = psi_error + GYR_GAIN / F_LOOP * (gyr_y - GYR_Y_OFFSET) + REMOTE_0_GAIN / F_LOOP * remote_0;
+	psi_error = psi_error + GYR_GAIN / F_LOOP * (gyr_y - GYR_Y_OFFSET) - ESC_0_GAIN / F_LOOP * esc_0;
 	float psi_delta = GYR_GAIN / F_LOOP * (gyr_y - GYR_Y_OFFSET);
 
 	static float psi_error_sum;
 	psi_error_sum = psi_error_sum + psi_error;
-	if (psi_error_sum < -VEL_MAX * F_LOOP / I_PSI) psi_error_sum = -VEL_MAX * F_LOOP / I_PSI;
-	if (psi_error_sum >  VEL_MAX * F_LOOP / I_PSI) psi_error_sum =  VEL_MAX * F_LOOP / I_PSI;
+	if (psi_error_sum < -100.0f * F_LOOP / I_PSI) psi_error_sum = -100.0f * F_LOOP / I_PSI;
+	if (psi_error_sum >  100.0f * F_LOOP / I_PSI) psi_error_sum =  100.0f * F_LOOP / I_PSI;
 
 	float rot = P_PSI * psi_error + I_PSI / F_LOOP * psi_error_sum + D_PSI * F_LOOP * psi_delta;
 
@@ -40,30 +56,30 @@ int runPID(void)
 	{
 		if (vel < 0)
 		{
-			if (-rot - vel > VEL_MAX) rot = -VEL_MAX - vel;
+			if (-rot - vel > 100.0f) rot = -100.0f - vel;
 		}
 		else
 		{
-			if (-rot + vel > VEL_MAX) rot = -VEL_MAX + vel;
+			if (-rot + vel > 100.0f) rot = -100.0f + vel;
 		}
 	}
 	else
 	{
 		if (vel < 0)
 		{
-			if (rot - vel > VEL_MAX) rot = VEL_MAX + vel;
+			if ( rot - vel > 100.0f) rot =  100.0f + vel;
 		}
 		else
 		{
-			if (rot + vel > VEL_MAX) rot = VEL_MAX - vel;
+			if ( rot + vel > 100.0f) rot =  100.0f - vel;
 		}
 	}
 
-	setDAC(convert(vel - rot), convert(vel + rot));
+	applyPWM(vel + rot, vel - rot);
 
 	if (phi < -PHI_CRIT || phi > PHI_CRIT) goto stop;
 
-	float vel_error = vel - REMOTE_1_GAIN * remote_1;
+	float vel_error = vel - ESC_1_GAIN * esc_1;
 
 	static float vel_error_sum;
 	vel_error_sum = vel_error_sum + vel_error;
@@ -77,16 +93,16 @@ int runPID(void)
 	return -1;
 
 	stop:
-	setDAC(0, 0);
+	applyPWM(0, 0);
 	setLED_A(0);
 	setLED_B(0);
 
-	phi = 0;
+	phi           = 0;
 	phi_error_sum = 0;
-	psi_error = 0;
+	psi_error     = 0;
 	psi_error_sum = 0;
 	vel_error_sum = 0;
-	phi_offset = 0;
+	phi_offset    = 0;
 
 	return 0;
 }
@@ -121,7 +137,7 @@ void loopPID(void)
 	}
 	else
 	{
-		state = readBTN();
+		state = readButton();
 
 		if (state)
 		{
